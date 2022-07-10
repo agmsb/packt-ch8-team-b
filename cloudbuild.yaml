@@ -1,0 +1,17 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    id: Build container image
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/agmsb-lab-08/team-b-repository/team-b-app',  '.']
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: Get kubeconfig and apply manifests
+    entrypoint: sh
+    args:
+      - '-c'
+      - |
+        gcloud container clusters get-credentials cluster --region us-central1 --project agmsb-lab-08
+        kubectl apply -f k8s.yaml -n team-b
+serviceAccount: 'projects/agmsb-lab-08/serviceAccounts/build-02-sa@agmsb-lab-08.iam.gserviceaccount.com'
+options:
+  workerPool: 'projects/173309800570/locations/us-central1/workerPools/private-pool'
+  logging: CLOUD_LOGGING_ONLY
+images: [us-central1-docker.pkg.dev/agmsb-lab-08/team-b-repository/team-b-app]
